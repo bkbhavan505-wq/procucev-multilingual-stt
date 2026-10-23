@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procucev AI • Speech Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0b0f19;
+            --card-bg: rgba(22, 30, 49, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-glow: #6366f1;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12), transparent 40%),
+                        var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        header {
+            grid-column: span 2;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .badge-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #818cf8;
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+        }
+
+        .badge-live span {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: border-color 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 18px;
+        }
+
+        select:focus {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Interactive Record Button */
+        .record-btn-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .btn-record {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            border: none;
+            border-radius: 14px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.35);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-record:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(225, 29, 72, 0.45);
+        }
+
+        .btn-record.recording {
+            background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+            animation: record-pulse 1.6s infinite;
+        }
+
+        @keyframes record-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Sound Wave Animation Visualizer */
+        .visualizer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 24px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+
+        .visualizer.active {
+            opacity: 1;
+        }
+
+        .bar {
+            width: 4px;
+            background: linear-gradient(to top, #38bdf8, #818cf8);
+            border-radius: 999px;
+            height: 6px;
+            transition: height 0.15s ease;
+        }
+
+        .visualizer.active .bar:nth-child(odd) { animation: wave 0.8s ease-in-out infinite alternate; }
+        .visualizer.active .bar:nth-child(even) { animation: wave 0.5s ease-in-out infinite alternate 0.2s; }
+
+        @keyframes wave {
+            0% { height: 6px; }
+            100% { height: 26px; }
+        }
+
+        .status-pill {
+            font-size: 13px;
+            font-weight: 500;
+            color: #38bdf8;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        /* Textarea Wrapper & Stats */
+        .textarea-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: #f1f5f9;
+            padding: 14px;
+            font-size: 14.5px;
+            font-family: inherit;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent-glow);
+        }
+
+        .textarea-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            padding: 0 4px;
+        }
+
+        /* Action Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            font-size: 13.5px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            flex: 1;
+            justify-content: center;
+        }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35); }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+        .btn-refresh {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .btn-refresh:hover { background: rgba(99, 102, 241, 0.25); }
+
+        /* History Cards */
+        .record-list {
+            max-height: 480px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 6px;
+        }
+
+        .record-list::-webkit-scrollbar { width: 6px; }
+        .record-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+
+        .history-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .history-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(3px);
+        }
+
+        .card-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 10px;
+        }
+
+        .card-tag {
+            font-size: 11px;
+            font-weight: 600;
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .card-time {
+            font-size: 11px;
+            color: #64748b;
+            margin-left: 6px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-mini {
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .btn-mini-tts { background: #4f46e5; color: white; }
+        .btn-mini-tts:hover { background: #4338ca; }
+        .btn-mini-edit { background: #d97706; color: white; }
+        .btn-mini-edit:hover { background: #b45309; }
+        .btn-mini-del { background: #dc2626; color: white; }
+        .btn-mini-del:hover { background: #b91c1c; }
+
+        @media (max-width: 820px) {
+            .container { grid-template-columns: 1fr; }
+            header { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="badge-live"><span></span> Real-Time AI Stream</div>
+        <h1>Speech Studio</h1>
+        <p class="subtitle">Multilingual Hindi & English Speech-to-Text • PostgreSQL Powered Dashboard</p>
+    </header>
+
+    <!-- LIVE AUDIO CAPTURE CARD -->
+    <div class="glass-card">
+        <div class="section-header">
+            <h2>🎙️ Live Recording</h2>
+        </div>
+        
+        <label for="langSelect">Input Language Mode</label>
+        <select id="langSelect">
+            <option value="en-IN" selected>English (India) • Latin Script</option>
+            <option value="hi-IN">Hindi • Devanagari Script</option>
+            <option value="en-US">English (US Standard)</option>
+        </select>
+
+        <div class="record-btn-container">
+            <button id="recordBtn" class="btn-record">
+                <span id="recordIcon">⏺</span>
+                <span id="recordText">Start Listening</span>
+            </button>
+        </div>
+
+        <!-- Animated sound visualizer -->
+        <div id="visualizer" class="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        <p id="liveStatus" class="status-pill">Ready to listen</p>
+
+        <div class="textarea-box">
+            <textarea id="liveText" placeholder="Start speaking... your words will stream here instantly in real time."></textarea>
+            <div class="textarea-stats">
+                <span id="charCount">0 characters • 0 words</span>
+                <span style="cursor: pointer; color: #38bdf8;" onclick="copyLiveText()">📋 Copy</span>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button id="saveBtn" class="btn btn-save">💾 Save to Database</button>
+            <button id="speakCurrentBtn" class="btn btn-secondary">🔊 Read Aloud</button>
+        </div>
+    </div>
+
+    <!-- PERSISTENCE DASHBOARD CARD -->
+    <div class="glass-card">
+        <div class="section-header">
+            <h2>🗂️ Transcription History</h2>
+            <button onclick="fetchHistory()" class="btn btn-refresh">↻ Refresh</button>
+        </div>
+        <div id="historyList" class="record-list">
+            <!-- Records loaded via REST API -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const recordBtn = document.getElementById('recordBtn');
+    const recordIcon = document.getElementById('recordIcon');
+    const recordText = document.getElementById('recordText');
+    const liveStatus = document.getElementById('liveStatus');
+    const liveText = document.getElementById('liveText');
+    const historyList = document.getElementById('historyList');
+    const langSelect = document.getElementById('langSelect');
+    const visualizer = document.getElementById('visualizer');
+    const charCount = document.getElementById('charCount');
+
+    let recognition = null;
+    let isRecording = false;
+
+    // Word & Char Counter
+    liveText.addEventListener('input', updateStats);
+    function updateStats() {
+        const text = liveText.value.trim();
+        const chars = text.length;
+        const words = text ? text.split(/\s+/).length : 0;
+        charCount.innerText = `${chars} characters • ${words} words`;
+    }
+
+    // 1. Multilingual STT Setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onresult = (event) => {
+            let fullTranscript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                fullTranscript += event.results[i][0].transcript + ' ';
+            }
+            liveText.value = fullTranscript.trim();
+            updateStats();
+        };
+
+        recognition.onerror = (e) => {
+            liveStatus.innerText = "⚠️ Speech error: " + e.error;
+            stopRecording();
+        };
+        
+        recognition.onend = () => {
+            if (isRecording) {
+                try { recognition.start(); } catch(err) {}
+            }
+        };
+    } else {
+        alert("Speech Recognition not supported in this browser. Please use Chrome or Edge.");
+    }
+
+    recordBtn.onclick = () => {
+        if (!isRecording) startRecording();
+        else stopRecording();
+    };
+
+    function startRecording() {
+        if (!recognition) return;
+        recognition.lang = langSelect.value;
+        recognition.start();
+        isRecording = true;
+        langSelect.disabled = true;
+        
+        recordText.innerText = "Stop Listening";
+        recordIcon.innerText = "⏹";
+        recordBtn.classList.add('recording');
+        visualizer.classList.add('active');
+        liveStatus.innerText = `● Listening (${langSelect.options[langSelect.selectedIndex].text.split('•')[0].trim()})...`;
+        liveStatus.style.color = "#f43f5e";
+    }
+
+    function stopRecording() {
+        if (recognition && isRecording) {
+            isRecording = false;
+            recognition.stop();
+        }
+        langSelect.disabled = false;
+        recordText.innerText = "Start Listening";
+        recordIcon.innerText = "⏺";
+        recordBtn.classList.remove('recording');
+        visualizer.classList.remove('active');
+        liveStatus.innerText = "Ready to listen";
+        liveStatus.style.color = "#38bdf8";
+    }
+
+    // 2. CRUD Operations
+    async function fetchHistory() {
+        try {
+            const res = await fetch('/api/transcriptions');
+            const data = await res.json();
+            historyList.innerHTML = '';
+
+            if (data.length === 0) {
+                historyList.innerHTML = `
+                    <div style="color: #64748b; text-align: center; padding: 40px 10px;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">📑</div>
+                        No transcriptions saved yet. Speak and hit Save!
+                    </div>`;
+                return;
+            }
+            
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-card';
+                div.innerHTML = `
+                    <div id="text-${item.id}" class="card-text">${escapeHtml(item.text)}</div>
+                    <div class="card-footer">
+                        <div>
+                            <span class="card-tag">${item.language || 'Multilingual'}</span>
+                            <span class="card-time">${new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-mini btn-mini-tts" onclick="speakText('${escapeHtml(item.text)}', '${item.language}')">🔊 TTS</button>
+                            <button class="btn-mini btn-mini-edit" onclick="editRecord(${item.id})">✏️ Edit</button>
+                            <button class="btn-mini btn-mini-del" onclick="deleteRecord(${item.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+                historyList.appendChild(div);
+            });
+        } catch (err) {
+            console.error("Failed to load history", err);
+        }
+    }
+
+    // CREATE
+    document.getElementById('saveBtn').onclick = async () => {
+        const text = liveText.value.trim();
+        if (!text) return alert("Transcript is empty. Speak something first!");
+
+        const selectedLangLabel = langSelect.options[langSelect.selectedIndex].text.split('•')[0].trim();
+
+        await fetch('/api/transcriptions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                text: text, 
+                language: selectedLangLabel 
+            })
+        });
+        liveText.value = '';
+        updateStats();
+        fetchHistory();
+    };
+
+    // UPDATE
+    window.editRecord = async (id) => {
+        const currentElem = document.getElementById(`text-${id}`);
+        const newText = prompt("Edit transcription:", currentElem.innerText);
+        if (newText !== null && newText.trim() !== "") {
+            await fetch(`/api/transcriptions/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: newText.trim() })
+            });
+            fetchHistory();
+        }
+    };
+
+    // DELETE
+    window.deleteRecord = async (id) => {
+        if (confirm("Delete this transcription record from Supabase?")) {
+            await fetch(`/api/transcriptions/${id}`, { method: 'DELETE' });
+            fetchHistory();
+        }
+    };
+
+    // TTS & Helpers
+    window.speakText = (text, langTag) => {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        if (langTag && langTag.toLowerCase().includes("hindi")) {
+            u.lang = 'hi-IN';
+        } else {
+            u.lang = 'en-IN';
+        }
+        window.speechSynthesis.speak(u);
+    };
+
+    document.getElementById('speakCurrentBtn').onclick = () => {
+        if (liveText.value.trim()) {
+            speakText(liveText.value.trim(), langSelect.value);
+        }
+    };
+
+    function copyLiveText() {
+        if (!liveText.value.trim()) return;
+        navigator.clipboard.writeText(liveText.value);
+        alert("Transcript copied to clipboard!");
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    fetchHistory();
+</script>
+</body>
+</html>
