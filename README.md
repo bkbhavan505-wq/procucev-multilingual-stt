@@ -16,7 +16,7 @@ Developed for the \*\*Procucev AI Technical Hiring Assignment\*\*.
 
 \## 🌐 Live Demo \& Repository
 
-\- \*\*Live Application:\*\* \[https://procucev-multilingual-stt.onrender.com](https://procucev-multilingual-stt.onrender.com)
+\- \*\*Live Application:\*\* \[https://procucev-multilingual-stt.onrender.com/](https://procucev-multilingual-stt.onrender.com/)
 
 \- \*\*GitHub Repository:\*\* \[https://github.com/bhavankumarv/procucev-multilingual-stt](https://github.com/bhavankumarv/procucev-multilingual-stt)
 
